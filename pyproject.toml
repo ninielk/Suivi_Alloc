@@ -1,0 +1,20 @@
+[project]
+name = "alloc"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "nini",email = "niama.elkamal@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "streamlit (>=1.54.0,<2.0.0)",
+    "pandas (>=1.4,<3.0.0)",
+    "openpyxl (>=3.1.5,<4.0.0)",
+    "numpy (>=2.4.2,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
