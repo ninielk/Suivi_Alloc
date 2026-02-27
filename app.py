@@ -12,61 +12,66 @@ st.set_page_config(page_title="Suivi d'Allocation", layout="wide")
 
 # ══════════════════════════════════════════════════════════════════
 #  STRUCTURE FIXE
-#  (numéro de ligne dans Alloc, label, type, detail)
-#  type   : blue=groupe, white=détail, total=ligne total
-#  detail : normal | nanties | nanties_no_formula
+#  (label, type, detail, B=critère AK, C=critère F, alloc_cible, marge)
 # ══════════════════════════════════════════════════════════════════
 ROW_DEFS = [
-    (3,  "Obligations classiques",                  "blue",  None),
-    (4,  "Obligations souveraines",                 "white", "normal"),
-    (5,  "Obligations privées",                     "white", "normal"),
-    (6,  "Obligations nanties",                     "blue",  None),
-    (7,  "Obligations souveraines",                 "white", "nanties"),
-    (8,  "Obligations privées",                     "white", "nanties_no_formula"),
-    (9,  "Autres produits de taux",                 "blue",  None),
-    (10, "Dettes privées",                          "white", "normal"),
-    (11, "Alternatifs",                             "white", "normal"),
-    (12, "Actions",                                 "blue",  None),
-    (13, "Actions internationales",                 "white", "normal"),
-    (14, "Actions Zone Euro",                       "white", "normal"),
-    (15, "Autres actions (capital investissement)", "white", "normal"),
-    (16, "Actifs réels",                            "blue",  None),
-    (17, "Immobilier placement",                    "white", "normal"),
-    (18, "Infrastructures",                         "white", "normal"),
-    (19, "Stratégique",                             "blue",  None),
-    (20, "Prêts stratégiques",                      "white", "normal"),
-    (21, "Immobilier stratégique",                  "white", "normal"),
-    (22, "Actions stratégiques",                    "white", "normal"),
-    (23, "Trésorerie",                              "blue",  None),
-    (24, "Trésorerie",                              "white", "normal"),
-    (25, "Total Général",                           "total", None),
+    ("Obligations classiques",                  "blue",  None,                   None,                                       None,                          "44%",  "-20% / +5%"),
+    ("Obligations souveraines",                 "white", "normal",               "Obligations souveraines",                  "EMPRUNTS ETATS & OBLIG GARANTIES", "20%",  "-20% / +5%"),
+    ("Obligations privées",                     "white", "normal",               "Obligations privées",                      "OBLIGATIONS COTEES",          "24%",  "-20% / +5%"),
+    ("Obligations nanties",                     "blue",  None,                   None,                                       None,                          "",     ""),
+    ("Obligations souveraines",                 "white", "nanties",              "Obligations souveraines",                  None,                          "",     ""),
+    ("Obligations privées",                     "white", "nanties_no_formula",   "Obligations privées",                      None,                          "",     ""),
+    ("Autres produits de taux",                 "blue",  None,                   None,                                       None,                          "13%",  "-13% / +3%"),
+    ("Dettes privées",                          "white", "normal",               "Dettes privées",                           None,                          "8%",   "-8% / +3%"),
+    ("Alternatifs",                             "white", "normal",               "Alternatifs",                              None,                          "5%",   "-5% / +3%"),
+    ("Actions",                                 "blue",  None,                   None,                                       None,                          "11%",  "-11% / +3%"),
+    ("Actions internationales",                 "white", "normal",               "Actions internationales",                  None,                          "0%",   "-0% / +3%"),
+    ("Actions Zone Euro",                       "white", "normal",               "Actions Zone Euro",                        None,                          "6%",   "-6% / +3%"),
+    ("Autres actions (capital investissement)", "white", "normal",               "Autres actions (capital investissement)",  None,                          "5%",   "-5% / +3%"),
+    ("Actifs réels",                            "blue",  None,                   None,                                       None,                          "19%",  "-19% / +3%"),
+    ("Immobilier placement",                    "white", "normal",               "Immobilier placement",                     None,                          "13%",  "-13% / +3%"),
+    ("Infrastructures",                         "white", "normal",               "Infrastructures",                          None,                          "6%",   "-6% / +3%"),
+    ("Stratégique",                             "blue",  None,                   None,                                       None,                          "12%",  ""),
+    ("Prêts stratégiques",                      "white", "normal",               "Prêts stratégiques",                       None,                          "2%",   ""),
+    ("Immobilier stratégique",                  "white", "normal",               "Immobilier stratégique",                   None,                          "1%",   ""),
+    ("Actions stratégiques",                    "white", "normal",               "Actions stratégiques",                     None,                          "9%",   ""),
+    ("Trésorerie",                              "blue",  None,                   None,                                       None,                          "1%",   ""),
+    ("Trésorerie",                              "white", "normal",               "Trésorerie",                               None,                          "1%",   ""),
+    ("Total Général",                           "total", None,                   None,                                       None,                          "100%", ""),
 ]
 
 BLUE_CHILDREN = {
+    0:  [1, 2],
     3:  [4, 5],
     6:  [7, 8],
-    9:  [10, 11],
-    12: [13, 14, 15],
-    16: [17, 18],
-    19: [20, 21, 22],
-    23: [24],
+    9:  [10, 11, 12],
+    13: [14, 15],
+    16: [17, 18, 19],
+    20: [21],
 }
-BLUE_ROWS   = [3, 6, 9, 12, 16, 19, 23]
-TOTAL_ROW   = 25
-REQUIRED_SHEETS = ["Portefeuille", "Retraitements", "Alloc"]
+BLUE_IDX  = [0, 3, 6, 9, 13, 16, 20]
+TOTAL_IDX = 22
+
+REQUIRED_SHEETS = ["Portefeuille", "Retraitements"]
 
 # ══════════════════════════════════════════════════════════════════
 #  HELPERS
 # ══════════════════════════════════════════════════════════════════
+def normalize(s):
+    """Retire accents, majuscules, espaces superflus — matching robuste."""
+    import unicodedata
+    s = unicodedata.normalize("NFD", str(s))
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn")
+    return " ".join(s.split()).upper()
+
+
 def somme_si(df, crit_col, crit_val, sum_col):
     if crit_val is None:
         return 0.0
     if isinstance(crit_val, float) and np.isnan(crit_val):
         return 0.0
-    mask = (
-        df[crit_col].astype(str).str.strip().str.upper()
-        == str(crit_val).strip().upper()
-    )
+    target = normalize(crit_val)
+    mask = df[crit_col].astype(str).map(normalize) == target
     return float(df.loc[mask, sum_col].sum())
 
 
@@ -82,15 +87,6 @@ def fmt_pct(val):
     return f"{val * 100:.1f}%"
 
 
-def fmt_alloc_cible(val):
-    if val is None:
-        return ""
-    if isinstance(val, (int, float)):
-        v = float(val)
-        return f"{v * 100:.0f}%" if abs(v) <= 1.5 else f"{v:.0f}%"
-    return str(val)
-
-
 # ══════════════════════════════════════════════════════════════════
 #  CALCUL
 # ══════════════════════════════════════════════════════════════════
@@ -98,10 +94,10 @@ def fmt_alloc_cible(val):
 def compute(file_bytes: bytes) -> dict:
     wb = openpyxl.load_workbook(BytesIO(file_bytes), data_only=True)
 
-    # ── Portefeuille (colonnes 0-indexées)
+    # ── Portefeuille
     #    F=5  Catégorie instrument
     #    W=22 VNC comptable
-    #    Y=24 Valeur de marché hors cc
+    #    Y=24 Valeur de marché
     #    AK=36 Classification
     ws_p = wb["Portefeuille"]
     rows_p = []
@@ -114,85 +110,69 @@ def compute(file_bytes: bytes) -> dict:
     df_p["Y"] = pd.to_numeric(df_p["Y"], errors="coerce").fillna(0)
 
     # ── Retraitements
-    #    B=1 Classe d'actifs   C=2 Montant
+    #    A=0 ISIN | B=1 Nom fonds | C=2 Classe d'actifs | D=3 Montant
     ws_r = wb["Retraitements"]
     rows_r = []
     for row in ws_r.iter_rows(min_row=2, values_only=True):
-        if not row or len(row) < 3 or row[1] is None:
+        if not row or len(row) < 4:
             continue
-        rows_r.append({"B": row[1], "C": row[2] or 0})
-    df_r = pd.DataFrame(rows_r) if rows_r else pd.DataFrame(columns=["B", "C"])
-    if not df_r.empty:
-        df_r["C"] = pd.to_numeric(df_r["C"], errors="coerce").fillna(0)
-
-    # ── Critères depuis Alloc
-    #    col2=B (critère AK)  col3=C (critère F)
-    #    col5=E (alloc cible) col6=F (marge manœuvre)
-    ws_a = wb["Alloc"]
-    crit = {}
-    for rn, _, _, _ in ROW_DEFS:
-        crit[rn] = {
-            "B": ws_a.cell(row=rn, column=2).value,
-            "C": ws_a.cell(row=rn, column=3).value,
-            "E": ws_a.cell(row=rn, column=5).value,
-            "F": ws_a.cell(row=rn, column=6).value,
-        }
+        classe  = row[2]
+        montant = row[3]
+        if classe is None or str(classe).strip().lower() in ("classe d'actifs", "montant", ""):
+            continue
+        try:
+            rows_r.append({"classe": str(classe).strip(), "D": float(montant)})
+        except (TypeError, ValueError):
+            continue
+    df_r = pd.DataFrame(rows_r) if rows_r else pd.DataFrame(columns=["classe", "D"])
 
     # ── Calcul lignes blanches
     res = {}
-    for rn, label, rtype, detail in ROW_DEFS:
+    for idx, (label, rtype, detail, B, C, _, _) in enumerate(ROW_DEFS):
         if rtype != "white":
             continue
 
-        B = crit[rn]["B"]
-        C = crit[rn]["C"]
-
-        # Col D – Retraitements
+        # Retraitement (col D)
         if detail == "normal" and not df_r.empty:
-            d = somme_si(df_r, "B", B, "C") / 1e6
+            d = somme_si(df_r, "classe", B, "D") / 1e6
         else:
             d = 0.0
 
-        # Col G – Allocation M€
+        # Allocation M€ (col G)
         if detail == "nanties_no_formula":
             g = 0.0
         else:
-            g = (somme_si(df_p, "F", C, "Y") + somme_si(df_p, "AK", B, "Y")) / 1e6 + d
+            g_ak = somme_si(df_p, "AK", B, "Y")
+            g_f  = somme_si(df_p, "F",  C, "Y") if C else 0.0
+            g    = (g_ak + g_f) / 1e6 + d
 
-        # Col J – VNC M€
+        # VNC M€ (col J)
         if detail in ("nanties", "nanties_no_formula"):
             j = None
         else:
-            j = (somme_si(df_p, "F", C, "W") + somme_si(df_p, "AK", B, "W")) / 1e6
+            j_ak = somme_si(df_p, "AK", B, "W")
+            j_f  = somme_si(df_p, "F",  C, "W") if C else 0.0
+            j    = (j_ak + j_f) / 1e6
 
-        res[rn] = {
-            "label": label, "type": rtype, "detail": detail,
-            "D": d, "E": crit[rn]["E"], "F": crit[rn]["F"], "G": g, "J": j,
-        }
+        res[idx] = {"label": label, "type": rtype, "detail": detail, "D": d, "G": g, "J": j}
 
     # ── Lignes bleues = somme enfants
     for br, children in BLUE_CHILDREN.items():
-        g_sum = sum(res[c]["G"] for c in children)
-        j_sum = sum(res[c]["J"] for c in children if res[c]["J"] is not None)
-        lbl   = next(l for r, l, t, _ in ROW_DEFS if r == br)
-        res[br] = {
-            "label": lbl, "type": "blue", "detail": None,
-            "D": 0.0, "E": crit[br]["E"], "F": crit[br]["F"], "G": g_sum, "J": j_sum,
-        }
+        g_sum = sum(res[c]["G"] for c in children if c in res)
+        j_sum = sum(res[c]["J"] for c in children if c in res and res[c]["J"] is not None)
+        res[br] = {"label": ROW_DEFS[br][0], "type": "blue", "detail": None,
+                   "D": 0.0, "G": g_sum, "J": j_sum}
 
     # ── Total
-    g_tot = sum(res[r]["G"] for r in BLUE_ROWS)
-    j_tot = sum(res[r]["J"] for r in BLUE_ROWS if isinstance(res[r]["J"], (int, float)))
-    res[TOTAL_ROW] = {
-        "label": "Total Général", "type": "total", "detail": None,
-        "D": 0.0, "E": crit[TOTAL_ROW]["E"], "F": crit[TOTAL_ROW]["F"],
-        "G": g_tot, "J": j_tot,
-    }
+    g_tot = sum(res[i]["G"] for i in BLUE_IDX)
+    j_tot = sum(res[i]["J"] for i in BLUE_IDX if isinstance(res[i].get("J"), (int, float)))
+    res[TOTAL_IDX] = {"label": "Total Général", "type": "total", "detail": None,
+                      "D": 0.0, "G": g_tot, "J": j_tot}
 
     # ── Pourcentages
     for r in res.values():
         r["H"] = r["G"] / g_tot if g_tot else 0.0
-        r["K"] = (r["J"] / j_tot) if (j_tot and r["J"] is not None) else None
+        r["K"] = (r["J"] / j_tot) if (j_tot and r.get("J") is not None) else None
 
     return res
 
@@ -214,12 +194,12 @@ def render_table(res: dict) -> str:
       .at th{padding:7px 12px;text-align:center;border:1px solid #888;
              background:#1F3864;color:#fff;font-weight:700;white-space:nowrap}
       .at td{padding:5px 12px;border:1px solid #ccc;white-space:nowrap}
-      .r{text-align:right} .l{text-align:left} .c{text-align:center}
+      .r{text-align:right}.l{text-align:left}.c{text-align:center}
     </style>
     <table class="at"><thead><tr>
       <th class="l">Catégorie d'investissement</th>
       <th>Alloc. cible</th>
-      <th>Marge de manœuvre</th>
+      <th>Marge de manoeuvre</th>
       <th>Retraitement (M€)</th>
       <th>Allocation (M€)</th>
       <th>Allocation (%)</th>
@@ -227,26 +207,24 @@ def render_table(res: dict) -> str:
       <th>VNC (%)</th>
     </tr></thead><tbody>
     """
-    for rn, label, rtype, detail in ROW_DEFS:
-        r = res.get(rn)
+    for idx, (label, rtype, detail, _, _, alloc_cible, marge) in enumerate(ROW_DEFS):
+        r = res.get(idx)
         if not r:
             continue
         s  = STYLE[rtype]
         cs = f'background:{s["bg"]};color:{s["fg"]};font-weight:{s["fw"]};'
 
-        d_s = fmt_m(r["D"])   if (rtype == "white" and detail == "normal") else ""
-        e_s = fmt_alloc_cible(r["E"])
-        f_s = str(r["F"])     if r["F"] is not None else ""
+        d_s = fmt_m(r["D"]) if (rtype == "white" and detail == "normal") else ""
         g_s = fmt_m(r["G"])
         h_s = fmt_pct(r["H"])
-        j_s = fmt_m(r["J"])   if r["J"] is not None else ""
-        k_s = fmt_pct(r["K"]) if r["K"] is not None else ""
+        j_s = fmt_m(r["J"]) if r.get("J") is not None else ""
+        k_s = fmt_pct(r["K"]) if r.get("K") is not None else ""
 
         html += (
             f'<tr>'
             f'<td class="l" style="{cs}">{label}</td>'
-            f'<td class="c" style="{cs}">{e_s}</td>'
-            f'<td class="c" style="{cs}">{f_s}</td>'
+            f'<td class="c" style="{cs}">{alloc_cible}</td>'
+            f'<td class="c" style="{cs}">{marge}</td>'
             f'<td class="r" style="{cs}">{d_s}</td>'
             f'<td class="r" style="{cs}">{g_s}</td>'
             f'<td class="r" style="{cs}">{h_s}</td>'
@@ -283,7 +261,7 @@ def export_excel(res: dict) -> BytesIO:
     }
 
     headers = [
-        "Catégorie d'investissement", "Alloc. cible", "Marge de manœuvre",
+        "Catégorie d'investissement", "Alloc. cible", "Marge de manoeuvre",
         "Retraitement (M€)", "Allocation (M€)", "Allocation (%)", "VNC (M€)", "VNC (%)",
     ]
     for col, h in enumerate(headers, 1):
@@ -291,27 +269,28 @@ def export_excel(res: dict) -> BytesIO:
         c.fill = FILLS["header"]; c.font = FONTS["header"]; c.border = border
         c.alignment = Alignment(horizontal="center", vertical="center")
 
-    for i, (rn, label, rtype, detail) in enumerate(ROW_DEFS):
-        r = res.get(rn)
+    for erow, (idx, (label, rtype, detail, _, _, alloc_cible, marge)) in enumerate(
+        enumerate(ROW_DEFS), 2
+    ):
+        r = res.get(idx)
         if not r:
             continue
-        erow = i + 2
         d_val = r["D"] if (rtype == "white" and detail == "normal") else None
-        vals  = [label, r["E"], r["F"], d_val, r["G"], r["H"],
-                 r["J"] if r["J"] is not None else None,
-                 r["K"] if r["K"] is not None else None]
-        fmts  = [None, "0%", "@", "#,##0", "#,##0", "0.0%", "#,##0", "0.0%"]
-        aligns= ["left"] + ["right"] * 7
+        vals  = [label, alloc_cible, marge, d_val, r["G"], r["H"],
+                 r["J"] if r.get("J") is not None else None,
+                 r["K"] if r.get("K") is not None else None]
+        fmts  = [None, "@", "@", "#,##0", "#,##0", "0.0%", "#,##0", "0.0%"]
+        aligns = ["left"] + ["right"] * 7
 
         for col, (val, fmt, align) in enumerate(zip(vals, fmts, aligns), 1):
             c = ws.cell(row=erow, column=col, value=val)
             c.fill = FILLS[rtype]; c.font = FONTS[rtype]; c.border = border
             c.alignment = Alignment(horizontal=align, vertical="center")
-            if fmt and val is not None:
+            if fmt and val is not None and val != "":
                 c.number_format = fmt
 
     ws.column_dimensions["A"].width = 42
-    for col in ["B","C","D","E","F","G","H"]:
+    for col in ["B", "C", "D", "E", "F", "G", "H"]:
         ws.column_dimensions[col].width = 18
     ws.row_dimensions[1].height = 24
 
@@ -337,7 +316,6 @@ if uploaded:
     try:
         file_bytes = uploaded.read()
 
-        # Vérif onglets
         wb_chk = openpyxl.load_workbook(BytesIO(file_bytes), read_only=True)
         missing = [s for s in REQUIRED_SHEETS if s not in wb_chk.sheetnames]
         wb_chk.close()
@@ -348,16 +326,37 @@ if uploaded:
         with st.spinner("Calcul en cours..."):
             res = compute(file_bytes)
 
-        g_tot = res[TOTAL_ROW]["G"]
-        j_tot = res[TOTAL_ROW]["J"]
+        # ── Controle : classes Retraitements non matchees ────────
+        categories_connues = {
+            normalize(B)
+            for _, rtype, detail, B, _, _, _ in ROW_DEFS
+            if rtype == "white" and detail == "normal" and B is not None
+        }
+        wb_chk2 = openpyxl.load_workbook(BytesIO(file_bytes), data_only=True)
+        ws_rchk = wb_chk2["Retraitements"]
+        classes_fichier = set()
+        for row in ws_rchk.iter_rows(min_row=2, values_only=True):
+            if row and len(row) >= 3 and row[2] is not None:
+                val = str(row[2]).strip()
+                if val.lower() not in ("classe d'actifs", "montant", ""):
+                    classes_fichier.add(normalize(val))
+        non_matches = classes_fichier - categories_connues
+        if non_matches:
+            st.warning(
+                f"Ces classes dans Retraitements n'ont matche aucune categorie "
+                f"et sont ignorees : **{', '.join(sorted(non_matches))}**"
+            )
+
+        g_tot = res[TOTAL_IDX]["G"]
+        j_tot = res[TOTAL_IDX]["J"]
 
         c1, c2, c3 = st.columns(3)
         c1.metric("Total Allocation", f"{g_tot:,.0f} M€")
         c2.metric("Total VNC",        f"{j_tot:,.0f} M€")
-        c3.metric("Écart Alloc − VNC", f"{g_tot - j_tot:,.0f} M€")
+        c3.metric("Ecart Alloc - VNC", f"{g_tot - j_tot:,.0f} M€")
 
         st.markdown("<br>", unsafe_allow_html=True)
-        components.html(render_table(res), height=700, scrolling=True)
+        components.html(render_table(res), height=750, scrolling=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
         st.download_button(
@@ -371,15 +370,14 @@ if uploaded:
         st.error(f"Onglet introuvable : {e}")
     except Exception as e:
         st.error(f"Erreur : {e}")
-        with st.expander("Détails"):
+        with st.expander("Details"):
             st.exception(e)
 else:
     st.info("En attente du fichier Excel...")
-    with st.expander("Onglets et colonnes requis"):
+    with st.expander("Onglets requis"):
         st.markdown("""
-| Onglet | Colonnes |
+| Onglet | Colonnes utilisées |
 |---|---|
-| **Portefeuille** | F (Catégorie instrument), W (VNC), Y (Valeur marché), AK (Classification) |
-| **Retraitements** | B (Classe d'actifs), C (Montant) |
-| **Alloc** | B, C (critères), E (Alloc cible), F (Marge de manœuvre) |
+| **Portefeuille** | F (catégorie instrument), W (VNC), Y (valeur marché), AK (classification) |
+| **Retraitements** | A (ISIN), B (nom fonds), C (classe d'actifs), D (montant) |
         """)
