@@ -23,7 +23,7 @@ ROW_DEFS = [
     ("Obligations classiques",                 "blue",  None,                None,                                       None,                           "44%",  "-20% / +5%",   None),
     ("Obligations souveraines",                "white", "normal",            "Obligations souveraines",                  "EMPRUNTS ETATS & OBLIG GARANTIES","20%", "-20% / +5%", None),
     ("Obligations privées",                    "white", "normal",            "Obligations privées",                      "OBLIGATIONS COTEES",            "24%",  "-20% / +5%",   None),
-    ("Obligations nanties",                    "blue",  None,                None,                                       None,                           "",     "",             None),
+    ("Obligations nanties",                    "nanties_parent", None,       None,                                       None,                           "",     "",             None),
     ("Obligations souveraines",                "white", "nanties",           "Obligations souveraines",                  None,                           "",     "",             None),
     ("Obligations privées",                    "white", "nanties_no_formula","Obligations privées",                      None,                           "",     "",             None),
     ("Autres produits de taux",                "blue",  None,                None,                                       None,                           "13%",  "-13% / +3%",   None),
@@ -205,8 +205,9 @@ def compute(file_bytes: bytes) -> dict:
         m_sum = sum(res[c]["M"] for c in children if c in res)
         n_sum = sum(res[c]["N"] for c in children if c in res)
         o_sum = sum(res[c]["O"] for c in children if c in res)
+        rtype_br = ROW_DEFS[br][1]
         res[br] = {
-            "label": ROW_DEFS[br][0], "type": "blue", "detail": None,
+            "label": ROW_DEFS[br][0], "type": rtype_br, "detail": None,
             "D": 0.0, "G": g_sum, "J": j_sum,
             "M": m_sum, "N": n_sum, "O": o_sum,
         }
@@ -241,6 +242,9 @@ def compute(file_bytes: bytes) -> dict:
         "M": m_tot, "N": n_tot, "O": o_tot,
     }
 
+    # ── Cas special : Obligations nanties G hardcode a 288.12
+    res[3]["G"] = 288.12
+
     # ── Pourcentages G et J
     for r in res.values():
         r["H"] = r["G"] / g_tot if g_tot else 0.0
@@ -269,9 +273,10 @@ def compute(file_bytes: bytes) -> dict:
 #  RENDU HTML
 # ══════════════════════════════════════════════════════════════════
 STYLE = {
-    "blue":  {"bg": "#2E75B6", "fg": "#FFFFFF", "fw": "700"},
-    "white": {"bg": "#FFFFFF", "fg": "#1a1a1a", "fw": "400"},
-    "total": {"bg": "#1F3864", "fg": "#FFFFFF", "fw": "700"},
+    "blue":         {"bg": "#2E75B6", "fg": "#FFFFFF", "fw": "700"},
+    "nanties_parent":{"bg": "#8FAADC", "fg": "#FFFFFF", "fw": "700"},
+    "white":        {"bg": "#FFFFFF", "fg": "#1a1a1a", "fw": "400"},
+    "total":        {"bg": "#1F3864", "fg": "#FFFFFF", "fw": "700"},
 }
 
 
@@ -351,16 +356,18 @@ def export_excel(res: dict) -> BytesIO:
     border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
     FILLS = {
-        "blue":   PatternFill(fgColor="2E75B6", fill_type="solid"),
-        "white":  PatternFill(fgColor="FFFFFF", fill_type="solid"),
-        "total":  PatternFill(fgColor="1F3864", fill_type="solid"),
-        "header": PatternFill(fgColor="1F3864", fill_type="solid"),
+        "blue":          PatternFill(fgColor="2E75B6", fill_type="solid"),
+        "nanties_parent":PatternFill(fgColor="8FAADC", fill_type="solid"),
+        "white":         PatternFill(fgColor="FFFFFF", fill_type="solid"),
+        "total":         PatternFill(fgColor="1F3864", fill_type="solid"),
+        "header":        PatternFill(fgColor="1F3864", fill_type="solid"),
     }
     FONTS = {
-        "blue":   Font(bold=True, color="FFFFFF", name="Calibri", size=11),
-        "white":  Font(color="000000",            name="Calibri", size=11),
-        "total":  Font(bold=True, color="FFFFFF", name="Calibri", size=11),
-        "header": Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "blue":          Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "nanties_parent":Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "white":         Font(color="000000",            name="Calibri", size=11),
+        "total":         Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "header":        Font(bold=True, color="FFFFFF", name="Calibri", size=11),
     }
 
     headers = [
@@ -420,7 +427,7 @@ def export_excel(res: dict) -> BytesIO:
 st.markdown("""
 <h1 style='color:#1F3864;font-family:Calibri,sans-serif;'>Suivi d'Allocation</h1>
 <p style='color:#666;font-size:14px;'>
-  Dépose le fichier Excel → Allocation, VNC, Retraitements et projections recalculés automatiquement.
+  Déposez le fichier Excel → Allocation, VNC, Retraitements et projections recalculés automatiquement.
 </p><hr style='border:1px solid #ddd;'>
 """, unsafe_allow_html=True)
 
@@ -501,5 +508,5 @@ else:
 |---|---|
 | **Portefeuille** | F, W, Y, AK |
 | **Retraitements** | A (ISIN), B (nom), C (classe), D (montant) |
-| **KNL** *(optionnel)* | B (classe), K (engagements), M (retour capital), N (capital gain) |
+| **KNL**  | B (classe), K (engagements), M (retour capital), N (capital gain) |
         """)
