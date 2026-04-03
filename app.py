@@ -1022,7 +1022,7 @@ if uploaded:
         col_dl1, col_dl2 = st.columns(2)
         with col_dl1:
             st.download_button(
-                label="📥 Exporter tableau Alloc",
+                label=" Exporter tableau Alloc",
                 data=export_excel(res),
                 file_name="suivi_allocation_calcule.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1031,7 +1031,7 @@ if uploaded:
         with col_dl2:
             tpt_data_dl = st.session_state.get("tpt_scr_data", {})
             st.download_button(
-                label="📥 Exporter tableau + TPT",
+                label=" Exporter tableau + TPT",
                 data=export_excel_with_tpt(res, tpt_data_dl),
                 file_name="suivi_allocation_avec_tpt.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
