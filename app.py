@@ -8,6 +8,7 @@ import openpyxl
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 import plotly.graph_objects as go
 import warnings
+
 warnings.filterwarnings("ignore")
 
 st.set_page_config(page_title="Suivi d'Allocation", layout="wide")
@@ -28,74 +29,78 @@ st.set_page_config(page_title="Suivi d'Allocation", layout="wide")
 ROW_DEFS = [
     # idx  label                                    type              detail                  B (AK)                                     C (F)                              alloc_fixe  C_knl
     # 0
-    ("Obligations classiques",                  "blue",           None,                   None,                                      None,                              None,       None),
+    ("Obligations classiques", "blue", None, None, None, None, None),
     # 1
-    ("Obligations souveraines",                 "white",          "normal",               "Obligations souveraines",                 "EMPRUNTS ETATS & OBLIG GARANTIES", None,       None),
+    ("Obligations souveraines", "white", "normal", "Obligations souveraines", "EMPRUNTS ETATS & OBLIG GARANTIES", None,
+     None),
     # 2
-    ("Obligations privées",                     "white",          "normal",               "Obligations privées",                     "OBLIGATIONS COTEES",               None,       None),
+    ("Obligations privées", "white", "normal", "Obligations privées", "OBLIGATIONS COTEES", None, None),
     # 3
-    ("Obligations nanties",                     "nanties_parent", None,                   None,                                      None,                              None,       None),
+    ("Obligations nanties", "nanties_parent", None, None, None, None, None),
     # 4
-    ("Obligations souveraines",                 "white",          "nantissement_souv",    "Obligations souveraines",                 "EMPRUNTS ETATS & OBLIG GARANTIES", None,       None),
+    ("Obligations souveraines", "white", "nantissement_souv", "Obligations souveraines",
+     "EMPRUNTS ETATS & OBLIG GARANTIES", None, None),
     # 5
-    ("Obligations privées",                     "white",          "nantissement_priv",    "Obligations privées",                     "OBLIGATIONS COTEES",               None,       None),
+    ("Obligations privées", "white", "nantissement_priv", "Obligations privées", "OBLIGATIONS COTEES", None, None),
     # 6
-    ("Autres produits de taux",                 "blue",           None,                   None,                                      None,                              0.13,       None),
+    ("Autres produits de taux", "blue", None, None, None, 0.13, None),
     # 7
-    ("Dettes privées",                          "white",          "normal",               "Dettes privées",                          None,                              0.08,       "DETTE PRIVEE"),
+    ("Dettes privées", "white", "normal", "Dettes privées", None, 0.08, "DETTE PRIVEE"),
     # 8
-    ("Alternatifs",                             "white",          "normal",               "Alternatifs",                             None,                              0.05,       "ALTERNATIF"),
+    ("Alternatifs", "white", "normal", "Alternatifs", None, 0.05, "ALTERNATIF"),
     # 9
-    ("Actions",                                 "blue",           None,                   None,                                      None,                              0.11,       None),
+    ("Actions", "blue", None, None, None, 0.11, None),
     # 10
-    ("Actions internationales",                 "white",          "normal",               "Actions internationales",                 None,                              0.00,       None),
+    ("Actions internationales", "white", "normal", "Actions internationales", None, 0.00, None),
     # 11
-    ("Actions Zone Euro",                       "white",          "normal",               "Actions Zone Euro",                       None,                              0.06,       "ACTIONS"),
+    ("Actions Zone Euro", "white", "normal", "Actions Zone Euro", None, 0.06, "ACTIONS"),
     # 12
-    ("Autres actions (capital investissement)", "white",          "normal",               "Autres actions (capital investissement)", None,                              0.05,       "Private Equity"),
+    ("Autres actions (capital investissement)", "white", "normal", "Autres actions (capital investissement)", None,
+     0.05, "Private Equity"),
     # 13
-    ("Actifs réels",                            "blue",           None,                   None,                                      None,                              0.19,       None),
+    ("Actifs réels", "blue", None, None, None, 0.19, None),
     # 14
-    ("Immobilier placement",                    "white",          "normal",               "Immobilier placement",                    None,                              0.13,       "IMMOBILIER"),
+    ("Immobilier placement", "white", "normal", "Immobilier placement", None, 0.13, "IMMOBILIER"),
     # 15
-    ("Infrastructures",                         "white",          "normal",               "Infrastructures",                         None,                              0.06,       "INFRASTRUCTURE"),
+    ("Infrastructures", "white", "normal", "Infrastructures", None, 0.06, "INFRASTRUCTURE"),
     # 16
-    ("Stratégique",                             "blue",           None,                   None,                                      None,                              0.12,       None),
+    ("Stratégique", "blue", None, None, None, 0.12, None),
     # 17
-    ("Prêts stratégiques",                      "white",          "normal",               "Prêts stratégiques",                      None,                              0.02,       None),
+    ("Prêts stratégiques", "white", "normal", "Prêts stratégiques", None, 0.02, None),
     # 18
-    ("Immobilier stratégique",                  "white",          "normal",               "Immobilier stratégique",                  None,                              0.01,       None),
+    ("Immobilier stratégique", "white", "normal", "Immobilier stratégique", None, 0.01, None),
     # 19
-    ("Actions stratégiques",                    "white",          "normal",               "Actions stratégiques",                    None,                              0.09,       None),
+    ("Actions stratégiques", "white", "normal", "Actions stratégiques", None, 0.09, None),
     # 20
-    ("Trésorerie",                              "blue",           None,                   None,                                      None,                              0.01,       None),
+    ("Trésorerie", "blue", None, None, None, 0.01, None),
     # 21
-    ("Trésorerie",                              "white",          "normal",               "Trésorerie",                              None,                              0.01,       None),
+    ("Trésorerie", "white", "normal", "Trésorerie", None, 0.01, None),
     # 22
-    ("Total Général",                           "total",          None,                   None,                                      None,                              1.00,       None),
+    ("Total Général", "total", None, None, None, 1.00, None),
 ]
 
 BLUE_CHILDREN = {
-    0:  [1, 2],
-    3:  [4, 5],
-    6:  [7, 8],
-    9:  [10, 11, 12],
+    0: [1, 2],
+    3: [4, 5],
+    6: [7, 8],
+    9: [10, 11, 12],
     13: [14, 15],
     16: [17, 18, 19],
     20: [21],
 }
-BLUE_IDX  = [0, 3, 6, 9, 13, 16, 20]
+BLUE_IDX = [0, 3, 6, 9, 13, 16, 20]
 TOTAL_IDX = 22
 
 # Marge de manoeuvre hardcodée (None = vide)
 MARGE = {
     0: "-20% / +5%", 1: "-20% / +5%", 2: "-20% / +5%",
-    6: "-13% / +3%", 7: "-8% / +3%",  8: "-5% / +3%",
+    6: "-13% / +3%", 7: "-8% / +3%", 8: "-5% / +3%",
     9: "-11% / +3%", 10: "-0% / +3%", 11: "-6% / +3%", 12: "-5% / +3%",
     13: "-19% / +3%", 14: "-13% / +3%", 15: "-6% / +3%",
 }
 
 REQUIRED_SHEETS = ["Portefeuille", "Retraitements", "Nantissement"]
+
 
 # ══════════════════════════════════════════════════════════════════
 #  HELPERS
@@ -136,45 +141,66 @@ def fmt_pct(val, decimals=1):
 def compute(file_bytes: bytes) -> dict:
     wb = openpyxl.load_workbook(BytesIO(file_bytes), data_only=True)
 
-    def read_portefeuille(ws):
-        """Portefeuille : F=5, W=22, Y=24, AK=36."""
+    # ── Noms de colonnes attendus (robuste aux insertions de colonnes)
+    # Portefeuille/Nantissement : on cherche par fragment de nom
+    PORT_COLS = {
+        "F": ["catégorie d'instrument", "categorie d instrument", "catégorie instrument"],
+        "W": ["valeur actuelle comptable", "valeur comptable", "vnc"],
+        "Y": ["valeur de marché", "valeur marche", "val. marché hors"],
+        "AK": ["classification", "classe d'actif", "classe actif"],
+    }
+    NANT_COLS = {
+        "F": ["catégorie d'instrument", "categorie d instrument", "catégorie instrument"],
+        "W": ["valeur actuelle comptable", "valeur comptable", "vnc"],
+        "Y": ["valeur de marché", "valeur marche", "val. marché hors"],
+    }
+
+    def find_col(headers_lower, candidates):
+        """Trouve l'index d'une colonne par fragment de nom (case-insensitive)."""
+        for i, h in enumerate(headers_lower):
+            if h is None: continue
+            for c in candidates:
+                if c in h:
+                    return i
+        return None
+
+    def read_by_header(ws, col_map, warnings_list, sheet_name):
+        """Lit un onglet en cherchant les colonnes par leur nom."""
+        header_row = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
+        headers_lower = [str(h).lower().strip() if h else "" for h in header_row]
+
+        idx = {}
+        for key, candidates in col_map.items():
+            found = find_col(headers_lower, candidates)
+            if found is None and key != "AK":  # AK optionnel pour Nantissement
+                warnings_list.append(f"⚠️ Colonne '{key}' introuvable dans **{sheet_name}** — vérifiez les headers.")
+            idx[key] = found
+
         rows = []
         for row in ws.iter_rows(min_row=2, values_only=True):
-            if not row or len(row) <= 36:
-                continue
-            rows.append({"F": row[5], "W": row[22], "Y": row[24], "AK": row[36]})
-        df = pd.DataFrame(rows) if rows else pd.DataFrame(columns=["F","W","Y","AK"])
-        df["W"] = pd.to_numeric(df["W"], errors="coerce").fillna(0)
-        df["Y"] = pd.to_numeric(df["Y"], errors="coerce").fillna(0)
+            if not row: continue
+            r = {}
+            for key, i in idx.items():
+                r[key] = row[i] if (i is not None and i < len(row)) else None
+            rows.append(r)
+
+        df = pd.DataFrame(rows) if rows else pd.DataFrame(columns=list(col_map.keys()))
+        for col in ["W", "Y"]:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+        if "AK" not in df.columns:
+            df["AK"] = None
         return df
 
-    def read_nantissement(ws):
-        """
-        Nantissement — indices confirmés depuis le CSV debug :
-          F  = index 5  (Catégorie d Instrument)
-          W  = index 22 (Valeur actuelle comptable hors cc)
-          Y  = index 24 (Valeur de marché hors cc)
-          AK = absent   → None
-        Nantissement a 36 colonnes (indices 0-35), on skip si < 25.
-        """
-        rows = []
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            if not row or len(row) < 25:
-                continue
-            rows.append({
-                "F":  row[5],
-                "W":  row[22],
-                "Y":  row[24],
-                "AK": None,
-            })
-        df = pd.DataFrame(rows) if rows else pd.DataFrame(columns=["F","W","Y","AK"])
-        df["W"] = pd.to_numeric(df["W"], errors="coerce").fillna(0)
-        df["Y"] = pd.to_numeric(df["Y"], errors="coerce").fillna(0)
-        return df
+    # Lecture Portefeuille & Nantissement par header
+    _warnings = []
+    df_p = read_by_header(wb["Portefeuille"], PORT_COLS, _warnings, "Portefeuille")
+    df_nant = read_by_header(wb["Nantissement"], NANT_COLS, _warnings,
+                             "Nantissement") if "Nantissement" in wb.sheetnames else pd.DataFrame(
+        columns=["F", "W", "Y", "AK"])
+    if "AK" not in df_nant.columns: df_nant["AK"] = None
 
-    # ── Portefeuille & Nantissement
-    df_p    = read_portefeuille(wb["Portefeuille"])
-    df_nant = read_nantissement(wb["Nantissement"]) if "Nantissement" in wb.sheetnames else pd.DataFrame(columns=["F","W","Y","AK"])
+    # (Portefeuille & Nantissement déjà lus par read_by_header ci-dessus)
 
     # ── Retraitements : C=2 classe, D=3 montant
     ws_r, rows_r = wb["Retraitements"], []
@@ -192,7 +218,7 @@ def compute(file_bytes: bytes) -> dict:
 
     # ── KNL : B=1, K=10, M=12, N=13 + date E1
     has_knl = "KNL" in wb.sheetnames
-    df_knl  = pd.DataFrame(columns=["B","K","M","N"])
+    df_knl = pd.DataFrame(columns=["B", "K", "M", "N"])
     knl_year = None
     if has_knl:
         ws_knl = wb["KNL"]
@@ -207,7 +233,7 @@ def compute(file_bytes: bytes) -> dict:
             rows_knl.append({"B": row[1], "K": row[10], "M": row[12], "N": row[13]})
         if rows_knl:
             df_knl = pd.DataFrame(rows_knl)
-            for col in ["K","M","N"]:
+            for col in ["K", "M", "N"]:
                 df_knl[col] = pd.to_numeric(df_knl[col], errors="coerce").fillna(0)
 
     # ── Calcul L8 (engagements nanties privées)
@@ -215,38 +241,120 @@ def compute(file_bytes: bytes) -> dict:
     if knl_year is not None:
         l8 = -35.0 * (knl_year - date.today().year)
 
+    # ── Onglet Params : durées ALM et chocs SCR modifiables par Jérôme
+    # Valeurs par défaut si onglet absent
+    PARAMS_DEFAULT = {
+        "Actions internationales": ("dur_alm", 20.0),
+        "Actions Zone Euro": ("dur_alm", 20.0),
+        "Autres actions (capital investissement)": ("dur_alm", 10.0),
+        "Immobilier placement": ("dur_alm", 20.0),
+        "Infrastructures": ("dur_alm", 20.0),
+        "Prêts stratégiques": ("dur_alm", 10.0),
+        "Immobilier stratégique": ("dur_alm", 20.0),
+        "Actions stratégiques": ("dur_alm", 10.0),
+        "Trésorerie": ("dur_alm", 1.0),
+        "Choc SCR Immobilier": ("scr", 0.22),
+        "Choc SCR Infrastructures": ("scr", 0.325),
+    }
+    params = {k: v[1] for k, v in PARAMS_DEFAULT.items()}
+
+    if "Params" in wb.sheetnames:
+        ws_params = wb["Params"]
+        for row in ws_params.iter_rows(min_row=2, values_only=True):
+            if not row or row[0] is None or row[1] is None:
+                continue
+            key = str(row[0]).strip()
+            try:
+                val = float(row[1])
+                if key in params:
+                    params[key] = val
+            except (TypeError, ValueError):
+                continue
+    else:
+        _warnings.append("ℹ️ Onglet **Params** absent — durées ALM et chocs SCR par défaut utilisés.")
+
+    # Mapping label → idx Alloc pour U_MANUAL
+    LABEL_TO_IDX = {
+        "Actions internationales": 10,
+        "Actions Zone Euro": 11,
+        "Autres actions (capital investissement)": 12,
+        "Immobilier placement": 14,
+        "Infrastructures": 15,
+        "Prêts stratégiques": 17,
+        "Immobilier stratégique": 18,
+        "Actions stratégiques": 19,
+        "Trésorerie": 21,
+    }
+    U_MANUAL_PARAMS = {LABEL_TO_IDX[k]: params[k] for k in LABEL_TO_IDX}
+    SCR_IMMO_PARAMS = params.get("Choc SCR Immobilier", 0.22)
+    SCR_INFRA_PARAMS = params.get("Choc SCR Infrastructures", 0.325)
+
     # ── TPT : lecture pour calculs SCR et duration
     #    I=8 NAV | Z=25 valeur marché | CT=97 fonds | EQ=146 duration
     #    CU=98 SCR taux | CW=100 SCR eq1 | CX=101 SCR eq2
     #    CY=102 SCR immo | CZ=103 SCR spread | DE=108 SCR forex | EX=153 CIC
     has_tpt = "TPT" in wb.sheetnames
-    tpt_scr = {}   # résultats SCR par catégorie CIC
-    tpt_dur = {}   # duration pondérée
+    tpt_scr = {}  # résultats SCR par catégorie CIC
+    tpt_dur = {}  # duration pondérée
     tpt_nav = 0.0
     tpt_dur_global = 0.0
-    tpt_dur_souv   = 0.0
+    tpt_dur_souv = 0.0
     tpt_dur_entrep = 0.0
     tpt_dur_autres = 0.0
 
     if has_tpt:
         ws_tpt = wb["TPT"]
+        # Lecture TPT par nom de colonne — robuste aux insertions
+        TPT_COL_NAMES = {
+            "NAV": "8b_total_number_of_shares",
+            "Z": "26_net_asset_value",
+            "CT": "95_identification_of_the_original_portfolio",
+            "EQ": "144_modified_duration",
+            "CU": "97_scr_mrkt_ir_up",
+            "CW": "99_scr_mrkt_eq_type1",
+            "CX": "100_scr_mrkt_eq_type2",
+            "CY": "101_scr_mrkt_prop",
+            "CZ": "102_scr_mrkt_spread",
+            "DE": "105b_scr_mrkt_fx",
+            "EX": "cic 1",  # colonne EX = "CIC 1"
+        }
+        tpt_header_row = next(ws_tpt.iter_rows(min_row=1, max_row=1, values_only=True))
+        tpt_headers_lower = [str(h).lower().strip() if h else "" for h in tpt_header_row]
+
+        tpt_idx = {}
+        for key, fragment in TPT_COL_NAMES.items():
+            for i, h in enumerate(tpt_headers_lower):
+                if fragment in h:
+                    tpt_idx[key] = i
+                    break
+            if key not in tpt_idx:
+                _warnings.append(f"⚠️ Colonne TPT '{key}' ({fragment}) introuvable — SCR/Duration peut être incorrect.")
+                tpt_idx[key] = None
+
         rows_tpt = []
+
+        def _n(v):
+            return float(v) if v is not None else 0.0
+
         for row in ws_tpt.iter_rows(min_row=2, values_only=True):
-            if not row or len(row) <= 153:
-                continue
-            def _n(v): return float(v) if v is not None else 0.0
+            if not row: continue
+
+            def g(key):
+                i = tpt_idx.get(key)
+                return row[i] if (i is not None and i < len(row)) else None
+
             rows_tpt.append({
-                "NAV": _n(row[8]),
-                "Z":   _n(row[25]),
-                "CT":  row[97],       # vide = direct, non-vide = fonds
-                "EQ":  _n(row[146]),  # duration modifiée attendue
-                "CU":  _n(row[98]),   # SCR taux weight
-                "CW":  _n(row[100]),  # SCR actions type1
-                "CX":  _n(row[101]),  # SCR actions type2
-                "CY":  _n(row[102]),  # SCR immo
-                "CZ":  _n(row[103]),  # SCR spread
-                "DE":  _n(row[108]),  # SCR forex
-                "EX":  row[153],      # CIC (code catégorie)
+                "NAV": _n(g("NAV")),
+                "Z": _n(g("Z")),
+                "CT": g("CT"),
+                "EQ": _n(g("EQ")),
+                "CU": _n(g("CU")),
+                "CW": _n(g("CW")),
+                "CX": _n(g("CX")),
+                "CY": _n(g("CY")),
+                "CZ": _n(g("CZ")),
+                "DE": _n(g("DE")),
+                "EX": g("EX"),
             })
         if rows_tpt:
             df_tpt = pd.DataFrame(rows_tpt)
@@ -282,25 +390,26 @@ def compute(file_bytes: bytes) -> dict:
             tpt_dur_global = (df_tpt["EQ"] * df_tpt["Z"]).sum() / z_all if z_all else 0.0
 
             corr = np.array([
-                [1,    0,    0,    0,    0.25],
-                [0,    1,    0.75, 0.5,  0.25],
-                [0,    0.75, 1,    0.75, 0.25],
-                [0,    0.5,  0.75, 1,    0.25],
-                [0.25, 0.25, 0.25, 0.25, 1   ],
+                [1, 0, 0, 0, 0.25],
+                [0, 1, 0.75, 0.5, 0.25],
+                [0, 0.75, 1, 0.75, 0.25],
+                [0, 0.5, 0.75, 1, 0.25],
+                [0.25, 0.25, 0.25, 0.25, 1],
             ])
 
             # ── SCR par CIC
-            cic_list = ["1","2","3","4","5","7","8","9","A","B","D","E"]
+            cic_list = ["1", "2", "3", "4", "5", "7", "8", "9", "A", "B", "D", "E"]
             for cic in cic_list:
                 sub = df_tpt[df_tpt["EX_str"] == cic]
-                z   = sub["Z"].sum()
-                scr_taux   = sub["CU"].sum() * tpt_nav
+                z = sub["Z"].sum()
+                scr_taux = sub["CU"].sum() * tpt_nav
                 scr_spread = sub["CZ"].sum() * tpt_nav
-                scr_eq1    = sub["CW"].sum() * tpt_nav
-                scr_eq2    = sub["CX"].sum() * tpt_nav
-                scr_immo   = sub["CY"].sum() * tpt_nav
-                scr_forex  = sub["DE"].sum() * tpt_nav
-                scr_actions = np.sqrt(scr_eq1**2 + scr_eq2**2 + 0.75*scr_eq1*scr_eq2) if (scr_eq1 or scr_eq2) else 0.0
+                scr_eq1 = sub["CW"].sum() * tpt_nav
+                scr_eq2 = sub["CX"].sum() * tpt_nav
+                scr_immo = sub["CY"].sum() * tpt_nav
+                scr_forex = sub["DE"].sum() * tpt_nav
+                scr_actions = np.sqrt(scr_eq1 ** 2 + scr_eq2 ** 2 + 0.75 * scr_eq1 * scr_eq2) if (
+                            scr_eq1 or scr_eq2) else 0.0
                 v = np.array([scr_taux, scr_spread, scr_actions, scr_immo, scr_forex])
                 scr_total = float(np.sqrt(v @ corr @ v)) if v.any() else 0.0
                 dur_w = (sub["EQ"] * sub["Z"]).sum() / z if z else 0.0
@@ -318,13 +427,14 @@ def compute(file_bytes: bytes) -> dict:
 
             # ── SCR TOTAL : calculé sur le vecteur global (diversification correcte)
             fa21 = df_tpt["Z"].sum() / 1e6
-            scr_taux_tot   = df_tpt["CU"].sum() * tpt_nav
+            scr_taux_tot = df_tpt["CU"].sum() * tpt_nav
             scr_spread_tot = df_tpt["CZ"].sum() * tpt_nav
-            scr_eq1_tot    = df_tpt["CW"].sum() * tpt_nav
-            scr_eq2_tot    = df_tpt["CX"].sum() * tpt_nav
-            scr_immo_tot   = df_tpt["CY"].sum() * tpt_nav
-            scr_forex_tot  = df_tpt["DE"].sum() * tpt_nav
-            scr_act_tot    = np.sqrt(scr_eq1_tot**2 + scr_eq2_tot**2 + 0.75*scr_eq1_tot*scr_eq2_tot) if (scr_eq1_tot or scr_eq2_tot) else 0.0
+            scr_eq1_tot = df_tpt["CW"].sum() * tpt_nav
+            scr_eq2_tot = df_tpt["CX"].sum() * tpt_nav
+            scr_immo_tot = df_tpt["CY"].sum() * tpt_nav
+            scr_forex_tot = df_tpt["DE"].sum() * tpt_nav
+            scr_act_tot = np.sqrt(scr_eq1_tot ** 2 + scr_eq2_tot ** 2 + 0.75 * scr_eq1_tot * scr_eq2_tot) if (
+                        scr_eq1_tot or scr_eq2_tot) else 0.0
             v_tot = np.array([scr_taux_tot, scr_spread_tot, scr_act_tot, scr_immo_tot, scr_forex_tot])
             fc21 = float(np.sqrt(v_tot @ corr @ v_tot)) / 1e6 if v_tot.any() else 0.0
             tpt_scr["TOTAL"] = {
@@ -364,10 +474,15 @@ def compute(file_bytes: bytes) -> dict:
         if rtype != "white" or idx in (4, 5):
             continue
 
-        d = 0.0; g = 0.0; j = None; m_val = 0.0; n_val = 0.0; o_val = 0.0
+        d = 0.0;
+        g = 0.0;
+        j = None;
+        m_val = 0.0;
+        n_val = 0.0;
+        o_val = 0.0
 
         if detail == "normal":
-            d     = somme_si(df_r, "classe", B, "D") / 1e6
+            d = somme_si(df_r, "classe", B, "D") / 1e6
             g_raw = (somme_si(df_p, "AK", B, "Y") + (somme_si(df_p, "F", C, "Y") if C else 0.0)) / 1e6
             j_raw = (somme_si(df_p, "AK", B, "W") + (somme_si(df_p, "F", C, "W") if C else 0.0)) / 1e6
 
@@ -397,10 +512,10 @@ def compute(file_bytes: bytes) -> dict:
         rtype_br = ROW_DEFS[br][1]
         g_sum = sum(res[c]["G"] for c in children if c in res)
         j_vals = [res[c]["J"] for c in children if c in res and res[c]["J"] is not None]
-        j_sum  = sum(j_vals) if j_vals else None
-        m_sum  = sum(res[c]["M"] for c in children if c in res)
-        n_sum  = sum(res[c]["N"] for c in children if c in res)
-        o_sum  = sum(res[c]["O"] for c in children if c in res)
+        j_sum = sum(j_vals) if j_vals else None
+        m_sum = sum(res[c]["M"] for c in children if c in res)
+        n_sum = sum(res[c]["N"] for c in children if c in res)
+        o_sum = sum(res[c]["O"] for c in children if c in res)
         res[br] = {"label": ROW_DEFS[br][0], "type": rtype_br, "detail": None,
                    "D": 0.0, "G": g_sum, "J": j_sum,
                    "M": m_sum, "N": n_sum, "O": o_sum}
@@ -415,7 +530,7 @@ def compute(file_bytes: bytes) -> dict:
     res[20]["N"] = res[21]["N"]
 
     # N[Oblig privées classiques] : N5 = -N9-N12-N16-N19-N23 + M25 - M6(nanties)
-    m_total  = sum(res[i]["M"] for i in BLUE_IDX)  # = M25
+    m_total = sum(res[i]["M"] for i in BLUE_IDX)  # = M25
     n_autres = sum(res[i]["N"] for i in [6, 9, 13, 16, 20])
     m_nanties = res[3]["M"]  # = M6
     res[2]["N"] = -n_autres + m_total - m_nanties
@@ -480,10 +595,14 @@ def compute(file_bytes: bytes) -> dict:
     for idx, r in res.items():
         if p_tot:
             q_raw = r["P"] / p_tot
-            if idx == 0:  r["Q"] = q_raw - res[3]["P"] / p_tot
-            elif idx == 1: r["Q"] = q_raw - res[4]["P"] / p_tot
-            elif idx == 2: r["Q"] = q_raw - res[5]["P"] / p_tot
-            else:          r["Q"] = q_raw
+            if idx == 0:
+                r["Q"] = q_raw - res[3]["P"] / p_tot
+            elif idx == 1:
+                r["Q"] = q_raw - res[4]["P"] / p_tot
+            elif idx == 2:
+                r["Q"] = q_raw - res[5]["P"] / p_tot
+            else:
+                r["Q"] = q_raw
         else:
             r["Q"] = None
 
@@ -491,9 +610,9 @@ def compute(file_bytes: bytes) -> dict:
     #  ETAPE 7 : colonnes S, U, T, V, W, X, Y, ECART, R
     # ══════════════════════════════════════════════
 
-    fk = {cic: tpt_scr.get(cic, {}).get("FK", 0.0) for cic in ["1","2","3","4","7","8","9","A","B","D","E"]}
+    fk = {cic: tpt_scr.get(cic, {}).get("FK", 0.0) for cic in ["1", "2", "3", "4", "7", "8", "9", "A", "B", "D", "E"]}
     fk_total = tpt_scr.get("TOTAL", {}).get("FK", 0.0)
-    fk_cic4  = fk.get("4", 0.0)
+    fk_cic4 = fk.get("4", 0.0)
 
     # ── Colonne S : duration par catégorie depuis TPT
     # S4 = TPT!FA2 = tpt_dur_souv, S5 = TPT!FA3 = tpt_dur_entrep
@@ -511,14 +630,9 @@ def compute(file_bytes: bytes) -> dict:
 
     # ── Colonne U : duration ALM (S pour rows 1-8, manuelles pour reste)
     # U25 = SOMMEPROD(U3:U24 ; H3:H24)
-    U_MANUAL = {
-        10: 20.0, 11: 20.0, 12: 10.0,   # Actions intl, ZE, autres
-        14: 20.0, 15: 20.0,              # Immo placement, Infra
-        17: 10.0, 18: 20.0, 19: 10.0,   # Prêts strat, Immo strat, Actions strat
-        21: 1.0,                          # Trésorerie
-    }
+    U_MANUAL = U_MANUAL_PARAMS
     # U4-U11 = S4-S11 (idx 1-8 seulement, pas idx 17 qui est manuel)
-    U_FROM_S = {1,2,4,5,7,8}
+    U_FROM_S = {1, 2, 4, 5, 7, 8}
     for idx, r in res.items():
         if idx == TOTAL_IDX: continue
         if idx in U_FROM_S:
@@ -559,8 +673,8 @@ def compute(file_bytes: bytes) -> dict:
         r["V"] = (r.get("U") or 0.0) * delta
     sum_t = sum(r.get("T") or 0.0 for i, r in res.items() if i != TOTAL_IDX)
     sum_v = sum(r.get("V") or 0.0 for i, r in res.items() if i != TOTAL_IDX)
-    res[TOTAL_IDX]["T"] = tpt_dur_global + sum_t   # T25 = S25 + SOMME(T)
-    res[TOTAL_IDX]["V"] = u25 + sum_v              # V25 = U25 + SOMME(V)
+    res[TOTAL_IDX]["T"] = tpt_dur_global + sum_t  # T25 = S25 + SOMME(T)
+    res[TOTAL_IDX]["V"] = u25 + sum_v  # V25 = U25 + SOMME(V)
 
     # ── Colonne Y : contribution SCR taux
     # Y_i = X_i × (P_i% - H_i%) | Y25 = W25 + SOMME(Y4:Y24)
@@ -570,15 +684,15 @@ def compute(file_bytes: bytes) -> dict:
         h_pct = r.get("H") or 0.0
         r["Y_col"] = (r.get("X") or 0.0) * (p_pct - h_pct)
     sum_y = sum(r.get("Y_col") or 0.0 for i, r in res.items() if i != TOTAL_IDX)
-    res[TOTAL_IDX]["Y_col"] = fk_total + sum_y     # Y25 = W25 + SOMME(Y)
+    res[TOTAL_IDX]["Y_col"] = fk_total + sum_y  # Y25 = W25 + SOMME(Y)
 
     # ── Colonne ECART (Excel col Q) et R
     # Q3=E3-P3-P6, Q9=E9-P9, Q12=E12-P12, Q16=E16-P16, Q19=E19-P19, Q23=E23-P23
     # (PAS de ECART pour nanties idx 3)
     for idx, r in res.items():
         ac = r.get("alloc_cible_f") or 0.0
-        q  = r.get("Q") or 0.0
-        if idx == 0:   # Q3 = E3 - P3 - P6
+        q = r.get("Q") or 0.0
+        if idx == 0:  # Q3 = E3 - P3 - P6
             r["ECART"] = ac - q - (res[3].get("Q") or 0.0)
         elif idx in (6, 9, 13, 16, 20):  # Q9, Q12, Q16, Q19, Q23
             r["ECART"] = ac - q
@@ -589,25 +703,26 @@ def compute(file_bytes: bytes) -> dict:
         ecart = r.get("ECART")
         r["R"] = (ecart * p_tot_r) if ecart is not None else None
 
-    return res
+    return res, _warnings
 
 
 # ══════════════════════════════════════════════════════════════════
 #  STYLE
 # ══════════════════════════════════════════════════════════════════
 # Couleurs DA LMG
-LMG_COLORS = ["#B10967","#412761","#007078","#F8AF00","#99DBF2","#D3E8CA","#6E6E6E","#243D7C","#E85D75","#5B9BD5","#70AD47","#FFC000"]
+LMG_COLORS = ["#B10967", "#412761", "#007078", "#F8AF00", "#99DBF2", "#D3E8CA", "#6E6E6E", "#243D7C", "#E85D75",
+              "#5B9BD5", "#70AD47", "#FFC000"]
 
 STYLE = {
-    "blue":          {"bg": "#B10967", "fg": "#FFFFFF", "fw": "700"},
-    "nanties_parent":{"bg": "#E85D75", "fg": "#FFFFFF", "fw": "700"},
-    "white":         {"bg": "#FFFFFF", "fg": "#412761", "fw": "400"},
-    "total":         {"bg": "#412761", "fg": "#FFFFFF", "fw": "700"},
+    "blue": {"bg": "#B10967", "fg": "#FFFFFF", "fw": "700"},
+    "nanties_parent": {"bg": "#E85D75", "fg": "#FFFFFF", "fw": "700"},
+    "white": {"bg": "#FFFFFF", "fg": "#412761", "fw": "400"},
+    "total": {"bg": "#412761", "fg": "#FFFFFF", "fw": "700"},
 }
 
 MARGE = {
     0: "-20% / +5%", 1: "-20% / +5%", 2: "-20% / +5%",
-    6: "-13% / +3%", 7: "-8% / +3%",  8: "-5% / +3%",
+    6: "-13% / +3%", 7: "-8% / +3%", 8: "-5% / +3%",
     9: "-11% / +3%", 10: "-0% / +3%", 11: "-6% / +3%", 12: "-5% / +3%",
     13: "-19% / +3%", 14: "-13% / +3%", 15: "-6% / +3%",
 }
@@ -669,18 +784,19 @@ def render_table(res: dict, show_retraitement: bool = False, show_qy: bool = Fal
         r = res.get(idx)
         if not r:
             continue
-        s  = STYLE[rtype]
+        s = STYLE[rtype]
         cs = f'background:{s["bg"]};color:{s["fg"]};font-weight:{s["fw"]};'
 
         ac_f = r.get("alloc_cible_f")
-        dur  = r.get("S") or 0.0
-        scr  = r.get("X") or 0.0
+        dur = r.get("S") or 0.0
+        scr = r.get("X") or 0.0
 
         cells = [
             (label, "l", True),
             (fmt_pct(ac_f) if ac_f is not None else "", "c", True),
             (MARGE.get(idx, ""), "c", True),
-            (fmt_m(r["D"]) if (rtype=="white" and detail in ("normal","nantissement_souv")) else "", "r", show_retraitement),
+            (fmt_m(r["D"]) if (rtype == "white" and detail in ("normal", "nantissement_souv")) else "", "r",
+             show_retraitement),
             (fmt_m(r["G"]), "r", True),
             (fmt_pct(r["H"]), "r", True),
             (fmt_m(r["J"]) if r.get("J") is not None else "", "r", True),
@@ -697,9 +813,9 @@ def render_table(res: dict, show_retraitement: bool = False, show_qy: bool = Fal
             (f"{(r.get('T') or 0):.3f}" if r.get("T") else "", "r", show_qy),
             (f"{(r.get('U') or 0):.2f}" if r.get("U") else "", "r", show_qy),
             (f"{(r.get('V') or 0):.3f}" if r.get("V") else "", "r", show_qy),
-            (f"{(r.get('W') or 0)*100:.2f}%" if (r.get("W") and idx == TOTAL_IDX) else "", "r", show_qy),
-            (f"{(r.get('X') or 0)*100:.2f}%" if r.get("X") else "", "r", show_qy),
-            (f"{(r.get('Y_col') or 0)*100:.2f}%" if r.get("Y_col") else "", "r", show_qy),
+            (f"{(r.get('W') or 0) * 100:.2f}%" if (r.get("W") and idx == TOTAL_IDX) else "", "r", show_qy),
+            (f"{(r.get('X') or 0) * 100:.2f}%" if r.get("X") else "", "r", show_qy),
+            (f"{(r.get('Y_col') or 0) * 100:.2f}%" if r.get("Y_col") else "", "r", show_qy),
         ]
         tds = "".join(f'<td class="{a}" style="{cs}">{v}</td>' for v, a, show in cells if show)
         html += f'<tr>{tds}</tr>\n'
@@ -712,24 +828,24 @@ def render_table(res: dict, show_retraitement: bool = False, show_qy: bool = Fal
 # ══════════════════════════════════════════════════════════════════
 def export_excel(res: dict) -> BytesIO:
     from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
-    wb  = openpyxl.Workbook()
-    ws  = wb.active
+    wb = openpyxl.Workbook()
+    ws = wb.active
     ws.title = "Alloc"
-    thin   = Side(style="thin", color="AAAAAA")
+    thin = Side(style="thin", color="AAAAAA")
     border = Border(left=thin, right=thin, top=thin, bottom=thin)
     FILLS = {
-        "blue":          PatternFill(fgColor="B10967", fill_type="solid"),
-        "nanties_parent":PatternFill(fgColor="E85D75", fill_type="solid"),
-        "white":         PatternFill(fgColor="FFFFFF", fill_type="solid"),
-        "total":         PatternFill(fgColor="412761", fill_type="solid"),
-        "header":        PatternFill(fgColor="412761", fill_type="solid"),
+        "blue": PatternFill(fgColor="B10967", fill_type="solid"),
+        "nanties_parent": PatternFill(fgColor="E85D75", fill_type="solid"),
+        "white": PatternFill(fgColor="FFFFFF", fill_type="solid"),
+        "total": PatternFill(fgColor="412761", fill_type="solid"),
+        "header": PatternFill(fgColor="412761", fill_type="solid"),
     }
     FONTS = {
-        "blue":          Font(bold=True, color="FFFFFF", name="Calibri", size=11),
-        "nanties_parent":Font(bold=True, color="FFFFFF", name="Calibri", size=11),
-        "white":         Font(color="412761",            name="Calibri", size=11),
-        "total":         Font(bold=True, color="FFFFFF", name="Calibri", size=11),
-        "header":        Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "blue": Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "nanties_parent": Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "white": Font(color="412761", name="Calibri", size=11),
+        "total": Font(bold=True, color="FFFFFF", name="Calibri", size=11),
+        "header": Font(bold=True, color="FFFFFF", name="Calibri", size=11),
     }
     headers = ["Catégorie", "Cible", "Marge", "Retraitement M€",
                "Alloc. M€", "Alloc. %", "VNC M€", "VNC %",
@@ -739,15 +855,17 @@ def export_excel(res: dict) -> BytesIO:
                "Duration ALM", "Contrib. dur. ALM", "SCR/Actifs global", "SCR/Actifs cat.", "Contrib. SCR taux"]
     for col, h in enumerate(headers, 1):
         c = ws.cell(row=1, column=col, value=h)
-        c.fill = FILLS["header"]; c.font = FONTS["header"]; c.border = border
+        c.fill = FILLS["header"];
+        c.font = FONTS["header"];
+        c.border = border
         c.alignment = Alignment(horizontal="center", vertical="center")
     for erow, (idx, (label, rtype, detail, _, _, _, _)) in enumerate(enumerate(ROW_DEFS), 2):
         r = res.get(idx)
         if not r:
             continue
         ac_f = r.get("alloc_cible_f")
-        d_val = r["D"] if (rtype=="white" and detail in ("normal","nantissement_souv")) else None
-        vals = [label, ac_f, MARGE.get(idx,""), d_val,
+        d_val = r["D"] if (rtype == "white" and detail in ("normal", "nantissement_souv")) else None
+        vals = [label, ac_f, MARGE.get(idx, ""), d_val,
                 r["G"], r["H"],
                 r["J"] if r.get("J") is not None else None,
                 r["K"] if r.get("K") is not None else None,
@@ -767,13 +885,15 @@ def export_excel(res: dict) -> BytesIO:
                 r.get("X") or None,
                 r.get("Y_col") or None,
                 ]
-        fmts = [None,"0%","@","#,##0","#,##0","0.0%","#,##0","0.0%",
-                "#,##0","#,##0","#,##0","#,##0","#,##0","0.0%",
-                "0.0%","#,##0","0.00","0.000","0.00","0.000","0.00%","0.00%","0.00%"]
+        fmts = [None, "0%", "@", "#,##0", "#,##0", "0.0%", "#,##0", "0.0%",
+                "#,##0", "#,##0", "#,##0", "#,##0", "#,##0", "0.0%",
+                "0.0%", "#,##0", "0.00", "0.000", "0.00", "0.000", "0.00%", "0.00%", "0.00%"]
         for col, (val, fmt) in enumerate(zip(vals, fmts), 1):
             c = ws.cell(row=erow, column=col, value=val)
-            c.fill = FILLS[rtype]; c.font = FONTS[rtype]; c.border = border
-            c.alignment = Alignment(horizontal="left" if col==1 else "right", vertical="center")
+            c.fill = FILLS[rtype];
+            c.font = FONTS[rtype];
+            c.border = border
+            c.alignment = Alignment(horizontal="left" if col == 1 else "right", vertical="center")
             if fmt and val is not None and val != "":
                 c.number_format = fmt
     ws.column_dimensions["A"].width = 38
@@ -801,40 +921,46 @@ def export_excel_with_tpt(res: dict, tpt_data: dict) -> BytesIO:
     dfont = Font(name="Calibri", size=11)
 
     CIC_LABELS = {
-        "1":"Obligations souveraines","2":"Obligations d'entreprises",
-        "3":"Actions","4":"Fonds d'investissement","5":"Titres structurés",
-        "7":"Trésorerie et dépôts","8":"Prêts et hypothèques",
-        "9":"Immobilisations corporelles","A":"Futures","B":"Options call",
-        "D":"Swaps","E":"Forwards","TOTAL":"TOTAL",
+        "1": "Obligations souveraines", "2": "Obligations d'entreprises",
+        "3": "Actions", "4": "Fonds d'investissement", "5": "Titres structurés",
+        "7": "Trésorerie et dépôts", "8": "Prêts et hypothèques",
+        "9": "Immobilisations corporelles", "A": "Futures", "B": "Options call",
+        "D": "Swaps", "E": "Forwards", "TOTAL": "TOTAL",
     }
-    tpt_headers = ["CIC","Catégorie","Val. marché (€)","Duration","SCR total (€)",
-                   "SCR taux (€)","SCR spread (€)","SCR actions (€)","SCR immo (€)","SCR forex (€)",
-                   "SCR actions cotées (€)","SCR actions non cotées (€)",
-                   "SCR/Actifs","SCR taux %","SCR spread %","SCR actions %","SCR immo %","SCR forex %"]
+    tpt_headers = ["CIC", "Catégorie", "Val. marché (€)", "Duration", "SCR total (€)",
+                   "SCR taux (€)", "SCR spread (€)", "SCR actions (€)", "SCR immo (€)", "SCR forex (€)",
+                   "SCR actions cotées (€)", "SCR actions non cotées (€)",
+                   "SCR/Actifs", "SCR taux %", "SCR spread %", "SCR actions %", "SCR immo %", "SCR forex %"]
     for col, h in enumerate(tpt_headers, 1):
         c = ws_tpt.cell(row=1, column=col, value=h)
-        c.fill = hfill; c.font = hfont; c.border = border
+        c.fill = hfill;
+        c.font = hfont;
+        c.border = border
         c.alignment = Alignment(horizontal="center", vertical="center")
 
-    def e(v): return round(v * 1e6, 2) if v else 0
-    def pct(v): return round(v*100, 3) if v else 0
+    def e(v):
+        return round(v * 1e6, 2) if v else 0
+
+    def pct(v):
+        return round(v * 100, 3) if v else 0
 
     row_i = 2
     for cic, data in tpt_data.items():
         if data.get("FA", 0) == 0 and cic != "TOTAL": continue
-        vals = [cic, CIC_LABELS.get(cic, cic), e(data.get("FA",0)),
-                round(data.get("FB",0),2) if data.get("FB") else None,
-                e(data.get("FC",0)), e(data.get("FD",0)), e(data.get("FE",0)),
-                e(data.get("FF",0)), e(data.get("FG",0)), e(data.get("FH",0)),
-                e(data.get("FI",0)), e(data.get("FJ",0)),
-                pct(data.get("FK",0)), pct(data.get("FL",0)), pct(data.get("FM",0)),
-                pct(data.get("FN",0)), pct(data.get("FO",0)), pct(data.get("FP",0))]
-        fmts_tpt = [None,None,"#,##0.00","0.00","#,##0.00","#,##0.00","#,##0.00",
-                    "#,##0.00","#,##0.00","#,##0.00","#,##0.00","#,##0.00",
-                    "0.000%","0.000%","0.000%","0.000%","0.000%","0.000%"]
+        vals = [cic, CIC_LABELS.get(cic, cic), e(data.get("FA", 0)),
+                round(data.get("FB", 0), 2) if data.get("FB") else None,
+                e(data.get("FC", 0)), e(data.get("FD", 0)), e(data.get("FE", 0)),
+                e(data.get("FF", 0)), e(data.get("FG", 0)), e(data.get("FH", 0)),
+                e(data.get("FI", 0)), e(data.get("FJ", 0)),
+                pct(data.get("FK", 0)), pct(data.get("FL", 0)), pct(data.get("FM", 0)),
+                pct(data.get("FN", 0)), pct(data.get("FO", 0)), pct(data.get("FP", 0))]
+        fmts_tpt = [None, None, "#,##0.00", "0.00", "#,##0.00", "#,##0.00", "#,##0.00",
+                    "#,##0.00", "#,##0.00", "#,##0.00", "#,##0.00", "#,##0.00",
+                    "0.000%", "0.000%", "0.000%", "0.000%", "0.000%", "0.000%"]
         for col, (val, fmt) in enumerate(zip(vals, fmts_tpt), 1):
             c = ws_tpt.cell(row=row_i, column=col, value=val)
-            c.font = dfont; c.border = border
+            c.font = dfont;
+            c.border = border
             c.alignment = Alignment(horizontal="right" if col > 2 else "left", vertical="center")
             if fmt and val is not None: c.number_format = fmt
         row_i += 1
@@ -878,7 +1004,10 @@ if uploaded:
             st.warning("Onglet TPT absent — duration et SCR à 0.")
 
         with st.spinner("Calcul en cours..."):
-            res = compute(file_bytes)
+            res, calc_warnings = compute(file_bytes)
+        if calc_warnings:
+            for w in calc_warnings:
+                st.warning(w)
             # Recup tpt_scr pour affichage tableau TPT
             if "TPT" in sheet_names:
                 wb_tpt = openpyxl.load_workbook(BytesIO(file_bytes), data_only=True)
@@ -902,9 +1031,11 @@ if uploaded:
                 if rows_tpt_ui:
                     df_ui = pd.DataFrame(rows_tpt_ui)
                     nav_ui = df_ui["NAV"].iloc[0] if len(df_ui) > 0 else 1.0
-                    corr_ui = np.array([[1,0,0,0,0.25],[0,1,0.75,0.5,0.25],[0,0.75,1,0.75,0.25],[0,0.5,0.75,1,0.25],[0.25,0.25,0.25,0.25,1]])
+                    corr_ui = np.array(
+                        [[1, 0, 0, 0, 0.25], [0, 1, 0.75, 0.5, 0.25], [0, 0.75, 1, 0.75, 0.25], [0, 0.5, 0.75, 1, 0.25],
+                         [0.25, 0.25, 0.25, 0.25, 1]])
                     scr_store = {}
-                    for cic in ["1","2","3","4","5","7","8","9","A","B","D","E"]:
+                    for cic in ["1", "2", "3", "4", "5", "7", "8", "9", "A", "B", "D", "E"]:
                         sub = df_ui[df_ui["EX"] == cic]
                         z = sub["Z"].sum()
                         if z == 0: continue
@@ -914,55 +1045,58 @@ if uploaded:
                         eq2 = sub["CX"].sum() * nav_ui
                         fg = sub["CY"].sum() * nav_ui
                         fh = sub["DE"].sum() * nav_ui
-                        ff = float(np.sqrt(eq1**2 + eq2**2 + 0.75*eq1*eq2)) if (eq1 or eq2) else 0.0
+                        ff = float(np.sqrt(eq1 ** 2 + eq2 ** 2 + 0.75 * eq1 * eq2)) if (eq1 or eq2) else 0.0
                         v = np.array([fd, fe, ff, fg, fh])
                         fc = float(np.sqrt(v @ corr_ui @ v)) if v.any() else 0.0
                         dur = (sub["EQ"] * sub["Z"]).sum() / z
-                        fb = (fd/z/0.01) if z else None  # FB = FD/FA/1%
+                        fb = (fd / z / 0.01) if z else None  # FB = FD/FA/1%
                         scr_store[cic] = {
-                            "FA": z/1e6,
+                            "FA": z / 1e6,
                             "FB": fb,
-                            "FC": fc/1e6,
-                            "FD": fd/1e6,
-                            "FE": fe/1e6,
-                            "FF": ff/1e6,
-                            "FG": fg/1e6,
-                            "FH": fh/1e6,
-                            "FI": eq1/1e6,      # SCR actions cotées
-                            "FJ": eq2/1e6,      # SCR actions non cotées
-                            "FK": fc/z if z else 0.0,
-                            "FL": fd/z if z else 0.0,   # SCR taux %
-                            "FM": fe/z if z else 0.0,   # SCR spread %
-                            "FN": ff/z if z else 0.0,   # SCR actions %
-                            "FO": fg/z if z else 0.0,   # SCR immo %
-                            "FP": fh/z if z else 0.0,   # SCR forex %
+                            "FC": fc / 1e6,
+                            "FD": fd / 1e6,
+                            "FE": fe / 1e6,
+                            "FF": ff / 1e6,
+                            "FG": fg / 1e6,
+                            "FH": fh / 1e6,
+                            "FI": eq1 / 1e6,  # SCR actions cotées
+                            "FJ": eq2 / 1e6,  # SCR actions non cotées
+                            "FK": fc / z if z else 0.0,
+                            "FL": fd / z if z else 0.0,  # SCR taux %
+                            "FM": fe / z if z else 0.0,  # SCR spread %
+                            "FN": ff / z if z else 0.0,  # SCR actions %
+                            "FO": fg / z if z else 0.0,  # SCR immo %
+                            "FP": fh / z if z else 0.0,  # SCR forex %
                         }
                     # Total
                     z_t = df_ui["Z"].sum()
-                    fd_t = df_ui["CU"].sum()*nav_ui; fe_t = df_ui["CZ"].sum()*nav_ui
-                    eq1_t = df_ui["CW"].sum()*nav_ui; eq2_t = df_ui["CX"].sum()*nav_ui
-                    fg_t = df_ui["CY"].sum()*nav_ui; fh_t = df_ui["DE"].sum()*nav_ui
-                    ff_t = float(np.sqrt(eq1_t**2+eq2_t**2+0.75*eq1_t*eq2_t)) if (eq1_t or eq2_t) else 0.0
+                    fd_t = df_ui["CU"].sum() * nav_ui;
+                    fe_t = df_ui["CZ"].sum() * nav_ui
+                    eq1_t = df_ui["CW"].sum() * nav_ui;
+                    eq2_t = df_ui["CX"].sum() * nav_ui
+                    fg_t = df_ui["CY"].sum() * nav_ui;
+                    fh_t = df_ui["DE"].sum() * nav_ui
+                    ff_t = float(np.sqrt(eq1_t ** 2 + eq2_t ** 2 + 0.75 * eq1_t * eq2_t)) if (eq1_t or eq2_t) else 0.0
                     v_t = np.array([fd_t, fe_t, ff_t, fg_t, fh_t])
                     fc_t = float(np.sqrt(v_t @ corr_ui @ v_t)) if v_t.any() else 0.0
-                    fb_t = (fd_t/z_t/0.01) if z_t else None
+                    fb_t = (fd_t / z_t / 0.01) if z_t else None
                     scr_store["TOTAL"] = {
-                        "FA": z_t/1e6,
+                        "FA": z_t / 1e6,
                         "FB": fb_t,
-                        "FC": fc_t/1e6,
-                        "FD": fd_t/1e6,
-                        "FE": fe_t/1e6,
-                        "FF": ff_t/1e6,
-                        "FG": fg_t/1e6,
-                        "FH": fh_t/1e6,
-                        "FI": eq1_t/1e6,
-                        "FJ": eq2_t/1e6,
-                        "FK": fc_t/z_t if z_t else 0.0,
-                        "FL": fd_t/z_t if z_t else 0.0,
-                        "FM": fe_t/z_t if z_t else 0.0,
-                        "FN": ff_t/z_t if z_t else 0.0,
-                        "FO": fg_t/z_t if z_t else 0.0,
-                        "FP": fh_t/z_t if z_t else 0.0,
+                        "FC": fc_t / 1e6,
+                        "FD": fd_t / 1e6,
+                        "FE": fe_t / 1e6,
+                        "FF": ff_t / 1e6,
+                        "FG": fg_t / 1e6,
+                        "FH": fh_t / 1e6,
+                        "FI": eq1_t / 1e6,
+                        "FJ": eq2_t / 1e6,
+                        "FK": fc_t / z_t if z_t else 0.0,
+                        "FL": fd_t / z_t if z_t else 0.0,
+                        "FM": fe_t / z_t if z_t else 0.0,
+                        "FN": ff_t / z_t if z_t else 0.0,
+                        "FO": fg_t / z_t if z_t else 0.0,
+                        "FP": fh_t / z_t if z_t else 0.0,
                     }
                     st.session_state["tpt_scr_data"] = scr_store
 
@@ -984,9 +1118,9 @@ if uploaded:
         if non_matches:
             st.warning(f"Classes Retraitements non reconnues : **{', '.join(sorted(non_matches))}**")
 
-        g_tot   = res[TOTAL_IDX]["G"]
-        j_tot   = res[TOTAL_IDX]["J"]
-        p_tot   = res[TOTAL_IDX].get("P") or 0.0
+        g_tot = res[TOTAL_IDX]["G"]
+        j_tot = res[TOTAL_IDX]["J"]
+        p_tot = res[TOTAL_IDX].get("P") or 0.0
         # Duration moyenne S25 = SOMMEPROD(EQ;Z)/SOMME(Z) depuis TPT global
         dur_moy = res[TOTAL_IDX].get("S") or 0.0
         # Duration ALM = V25 = U25 + SOMME(V_i) = sum(U_i * P_i%)
@@ -1001,18 +1135,18 @@ if uploaded:
         scr_taux_kpi = (res[TOTAL_IDX].get("X") or 0.0) if False else 0.0  # placeholder
 
         c1, c2, c3, c4, c5 = st.columns(5)
-        c1.metric("Total Allocation",  f"{g_tot:,.0f} M€")
-        c2.metric("Alloc. projetée",   f"{p_tot:,.0f} M€")
-        c3.metric("Duration moyenne",  f"{dur_moy:.3f}")
-        c4.metric("Duration ALM",      f"{dur_alm:.3f}")
-        c5.metric("SCR/Actifs",        f"{scr_act*100:.2f}%")
+        c1.metric("Total Allocation", f"{g_tot:,.0f} M€")
+        c2.metric("Alloc. projetée", f"{p_tot:,.0f} M€")
+        c3.metric("Duration moyenne", f"{dur_moy:.3f}")
+        c4.metric("Duration ALM", f"{dur_alm:.3f}")
+        c5.metric("SCR/Actifs", f"{scr_act * 100:.2f}%")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # Toggles colonnes
         col_t1, col_t2 = st.columns(2)
         show_ret = col_t1.checkbox("Retraitement", value=False)
-        show_qy  = col_t2.checkbox("Colonnes pilotage (Écart, Duration, SCR)", value=False)
+        show_qy = col_t2.checkbox("Colonnes pilotage (Écart, Duration, SCR)", value=False)
 
         components.html(render_table(res, show_retraitement=show_ret, show_qy=show_qy),
                         height=800, scrolling=True)
@@ -1022,7 +1156,7 @@ if uploaded:
         col_dl1, col_dl2 = st.columns(2)
         with col_dl1:
             st.download_button(
-                label=" Exporter tableau Alloc",
+                label="📥 Exporter tableau Alloc",
                 data=export_excel(res),
                 file_name="suivi_allocation_calcule.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1031,7 +1165,7 @@ if uploaded:
         with col_dl2:
             tpt_data_dl = st.session_state.get("tpt_scr_data", {})
             st.download_button(
-                label=" Exporter tableau + TPT",
+                label="📥 Exporter tableau + TPT",
                 data=export_excel_with_tpt(res, tpt_data_dl),
                 file_name="suivi_allocation_avec_tpt.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1040,6 +1174,7 @@ if uploaded:
 
         # Camemberts côte à côte
         import plotly.graph_objects as go
+
         st.markdown("---")
         st.markdown("### Répartition par catégorie")
         colors_pie = LMG_COLORS
@@ -1052,12 +1187,16 @@ if uploaded:
             r = res.get(br)
             if not r: continue
             col = colors_pie[i % len(colors_pie)]
-            h_pct = r.get("H") or 0.0   # alloc actuelle H%
-            q_pct = r.get("Q") or 0.0   # alloc projetée Q% (déjà ajusté pour nanties)
+            h_pct = r.get("H") or 0.0  # alloc actuelle H%
+            q_pct = r.get("Q") or 0.0  # alloc projetée Q% (déjà ajusté pour nanties)
             if h_pct > 0:
-                labels_a.append(r["label"]); vals_a.append(round(h_pct*100,1)); cols_a.append(col)
+                labels_a.append(r["label"]);
+                vals_a.append(round(h_pct * 100, 1));
+                cols_a.append(col)
             if q_pct > 0:
-                labels_p.append(r["label"]); vals_p.append(round(q_pct*100,1)); cols_p.append(col)
+                labels_p.append(r["label"]);
+                vals_p.append(round(q_pct * 100, 1));
+                cols_p.append(col)
 
         col_pie1, col_pie2 = st.columns(2)
         date_actuelle = "31/12/2025"
@@ -1076,7 +1215,7 @@ if uploaded:
                 hovertemplate="%{label}<br>%{text}<extra></extra>",
             ))
             fig.update_layout(title=dict(text=titre, x=0.5, font=dict(size=13)),
-                              showlegend=True, margin=dict(t=50,b=10,l=10,r=10), height=400)
+                              showlegend=True, margin=dict(t=50, b=10, l=10, r=10), height=400)
             with col_pie:
                 st.plotly_chart(fig, use_container_width=True)
 
@@ -1097,8 +1236,16 @@ if uploaded:
             for cic, data in st.session_state["tpt_scr_data"].items():
                 if data.get("FA", 0) == 0 and cic != "TOTAL":
                     continue
-                def e(v): return round(v * 1e6, 2) if v else 0  # M€ → €
-                def pct(v): return f"{v*100:.3f}%" if v else "0.000%"
+
+
+                def e(v):
+                    return round(v * 1e6, 2) if v else 0  # M€ → €
+
+
+                def pct(v):
+                    return f"{v * 100:.3f}%" if v else "0.000%"
+
+
                 tpt_table.append({
                     "CIC": cic,
                     "Catégorie": CIC_LABELS.get(cic, cic),
