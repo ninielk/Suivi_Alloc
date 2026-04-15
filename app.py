@@ -964,8 +964,9 @@ if uploaded:
         if calc_warnings:
             for w in calc_warnings:
                 st.warning(w)
-            # Recup tpt_scr pour affichage tableau TPT
-            if "TPT" in sheet_names:
+
+        # Recup tpt_scr pour affichage tableau TPT (toujours, pas seulement si warnings)
+        if "TPT" in sheet_names:
                 wb_tpt = openpyxl.load_workbook(BytesIO(file_bytes), data_only=True)
                 ws_tpt_ui = wb_tpt["TPT"]
                 rows_tpt_ui = []
