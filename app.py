@@ -527,9 +527,10 @@ def compute(file_bytes: bytes) -> dict:
     e6 = res[3]["G"] / g_tot if g_tot else 0.0
     e7 = res[4]["G"] / g_tot if g_tot else 0.0
     e8 = res[5]["G"] / g_tot if g_tot else 0.0
-    res[3]["alloc_cible_f"] = e6
-    res[4]["alloc_cible_f"] = e7
-    res[5]["alloc_cible_f"] = e8
+    # E6=P6, E7=P7, E8=P8 : alloc cible nanties = alloc projetée (sera mise à jour après calcul P)
+    res[3]["alloc_cible_f"] = e6  # sera remplacé après calcul P
+    res[4]["alloc_cible_f"] = e7  # sera remplacé après calcul P
+    res[5]["alloc_cible_f"] = e8  # sera remplacé après calcul P
     res[0]["alloc_cible_f"] = 0.44 - e6
     res[1]["alloc_cible_f"] = 0.20 - e7
     res[2]["alloc_cible_f"] = 0.24 - e8
@@ -573,6 +574,12 @@ def compute(file_bytes: bytes) -> dict:
             else:          r["Q"] = q_raw
         else:
             r["Q"] = None
+
+    # E6=P6, E7=P7, E8=P8 : mise à jour alloc cible nanties avec valeurs projetées
+    p_tot_tmp = res[TOTAL_IDX].get("P") or 1.0
+    res[3]["alloc_cible_f"] = res[3]["P"] / p_tot_tmp if p_tot_tmp else 0.0
+    res[4]["alloc_cible_f"] = res[4]["P"] / p_tot_tmp if p_tot_tmp else 0.0
+    res[5]["alloc_cible_f"] = res[5]["P"] / p_tot_tmp if p_tot_tmp else 0.0
 
     # ══════════════════════════════════════════════
     #  ETAPE 7 : colonnes S, U, T, V, W, X, Y, ECART, R
